@@ -39,19 +39,17 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public Account withdraw(AccountDTO accountDTO, double amount, String ssn)
+    public Account withdraw(double amount, String iban, String ssn)
             throws AccountNotFoundException, InsufficientAmountException, InsufficientBalanceException,
             SsnNotValidException {
         Account account;
         try {
-            account = new Account();
-            mapAccount(account, accountDTO);
-
-            if (!dao.idExists(accountDTO.getAccountID())) {
-                throw new AccountNotFoundException(account);
+            account = dao.get(iban);
+            if (account == null) {
+                throw new AccountNotFoundException(iban);
             }
 
-            if (!(dao.get(accountDTO.getAccountID()).getHolder().getSsn().equals(ssn))) {
+            if (!account.getHolder().getSsn().equals(ssn)) {
                 throw new SsnNotValidException(ssn);
             }
 
@@ -59,35 +57,32 @@ public class AccountServiceImpl implements IAccountService {
                 throw new InsufficientAmountException(amount);
             }
 
-            if (accountDTO.getBalance() - amount < 0) {
-                throw new InsufficientBalanceException(accountDTO.getBalance());
+            if (account.getBalance() - amount < 0) {
+                throw new InsufficientBalanceException(account.getBalance());
             }
 
-            accountDTO.setBalance(accountDTO.getBalance() - amount);
-            account.setBalance(accountDTO.getBalance());
-
+            double newBalance = account.getBalance() - amount;
+            account.setBalance(newBalance);
             return dao.update(account);
 
         } catch (AccountNotFoundException | InsufficientBalanceException | InsufficientAmountException
-                 | SsnNotValidException e) {
+                | SsnNotValidException e) {
             e.printStackTrace();
             throw e;
         }
     }
 
     @Override
-    public Account deposit(AccountDTO accountDTO, double amount, String ssn)
+    public Account deposit(double amount, String iban, String ssn)
             throws AccountNotFoundException, InsufficientAmountException, SsnNotValidException {
         Account account;
         try {
-            account = new Account();
-            mapAccount(account, accountDTO);
-
-            if (!dao.idExists(accountDTO.getAccountID())) {
-                throw new AccountNotFoundException(account);
+            account = dao.get(iban);
+            if (account == null) {
+                throw new AccountNotFoundException(iban);
             }
 
-            if (!dao.get(accountDTO.getAccountID()).getHolder().getSsn().equals(ssn)) {
+            if (!account.getHolder().getSsn().equals(ssn)) {
                 throw new SsnNotValidException(ssn);
             }
 
@@ -95,9 +90,8 @@ public class AccountServiceImpl implements IAccountService {
                 throw new InsufficientAmountException(amount);
             }
 
-            accountDTO.setBalance(accountDTO.getBalance() + amount);
-            account.setBalance(accountDTO.getBalance());
-
+            double newBalance = account.getBalance() + amount;
+            account.setBalance(newBalance);
             return dao.update(account);
 
         } catch (AccountNotFoundException | InsufficientAmountException | SsnNotValidException e) {

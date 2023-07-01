@@ -27,10 +27,10 @@ public interface IAccountService {
      * Withdraws the specific amount from the {@link Account} based on the data
      * carried by the {@link AccountDTO}.
      *
-     * @param accountDTO
-     *          the DTO that contains the account data.
      * @param amount
      *          the amount to be withdrawn.
+     * @param iban
+     *          the {@link Account#iban}.
      * @param ssn
      *          the {@link User#ssn}.
      * @return
@@ -45,7 +45,7 @@ public interface IAccountService {
      * @throws SsnNotValidException
      *          if the {@link Account#ssn} is not valid.
      */
-    Account withdraw(AccountDTO accountDTO, double amount, String ssn)
+    Account withdraw(double amount, String iban, String ssn)
             throws AccountNotFoundException, InsufficientAmountException,
             InsufficientBalanceException, SsnNotValidException;
 
@@ -53,10 +53,12 @@ public interface IAccountService {
      * Deposits the specific amount to the {@link Account} based on the data
      * carried by the {@link AccountDTO}.
      *
-     * @param accountDTO
-     *          the DTO that contains the account data.
      * @param amount
      *          the amount to be deposited.
+     * @param iban
+     *          the {@link Account#iban}.
+     * @param ssn
+     *          the {@link User#ssn}.
      * @return
      *          the resulting account.
      * @throws AccountNotFoundException
@@ -67,7 +69,7 @@ public interface IAccountService {
      * @throws SsnNotValidException
      *          if the  {@link Account#ssn} is not valid.
      */
-    Account deposit(AccountDTO accountDTO, double amount, String ssn)
+    Account deposit(double amount, String iban, String ssn)
             throws AccountNotFoundException, InsufficientAmountException, SsnNotValidException;
 
     /**
@@ -111,7 +113,7 @@ public interface IAccountService {
      * Returns all the {@link Account} instances of the datasource.
      *
      * @return
-     *          the resulting {@link List< Account >}.
+     *          the resulting {@link List<Account>}.
      */
     List<Account> getAllAccounts();
 }

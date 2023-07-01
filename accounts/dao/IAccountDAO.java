@@ -60,7 +60,7 @@ public interface IAccountDAO {
      * Returns all the {@link Account} from the datasource
      *
      * @return
-     *          the resulting {@link List< Account >}
+     *          the resulting {@link List<Account>}
      */
     List<Account> getAll();
     
